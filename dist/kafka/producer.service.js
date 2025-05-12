@@ -6,20 +6,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.ProducerService = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-const kafka_module_1 = require("./kafka/kafka.module");
-const test_consumer_1 = require("./test.consumer");
-let AppModule = class AppModule {
+const kafkajs_1 = require("kafkajs");
+let ProducerService = class ProducerService {
+    kafka = new kafkajs_1.Kafka({
+        brokers: ['localhost: 9092'],
+    });
+    producer = this.kafka.producer();
+    async onModuleInit() {
+        await this.producer.connect();
+    }
+    async produce(record) {
+        await this.producer.send(record);
+    }
+    async onApplicationShutdown() {
+        await this.producer.disconnect();
+    }
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
-    (0, common_1.Module)({
-        imports: [kafka_module_1.KafkaModule],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, test_consumer_1.TestConsumer],
-    })
-], AppModule);
-//# sourceMappingURL=app.module.js.map
+exports.ProducerService = ProducerService;
+exports.ProducerService = ProducerService = __decorate([
+    (0, common_1.Injectable)()
+], ProducerService);
+//# sourceMappingURL=producer.service.js.map

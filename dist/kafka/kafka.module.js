@@ -6,20 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.KafkaModule = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-const kafka_module_1 = require("./kafka/kafka.module");
-const test_consumer_1 = require("./test.consumer");
-let AppModule = class AppModule {
+const producer_service_1 = require("./producer.service");
+const consumer_service_1 = require("./consumer.service");
+let KafkaModule = class KafkaModule {
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
+exports.KafkaModule = KafkaModule;
+exports.KafkaModule = KafkaModule = __decorate([
     (0, common_1.Module)({
-        imports: [kafka_module_1.KafkaModule],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, test_consumer_1.TestConsumer],
+        providers: [producer_service_1.ProducerService, consumer_service_1.ConsumerService],
+        exports: [producer_service_1.ProducerService, consumer_service_1.ConsumerService]
     })
-], AppModule);
-//# sourceMappingURL=app.module.js.map
+], KafkaModule);
+;
+//# sourceMappingURL=kafka.module.js.map
