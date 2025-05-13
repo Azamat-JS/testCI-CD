@@ -36,6 +36,30 @@ let AppController = class AppController {
             data
         };
     }
+    async deleteCacheKey(key) {
+        await this.appService.deleteCacheKey(key);
+        return {
+            success: true,
+            status: 201,
+            message: 'Key deleted successfully'
+        };
+    }
+    async resetCache() {
+        await this.appService.resetCache();
+        return {
+            success: true,
+            status: 200,
+            message: "Cache cleared successfully"
+        };
+    }
+    async cacheStore() {
+        const store = await this.appService.cacheKeys();
+        return {
+            success: true,
+            status: 200,
+            data: store
+        };
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -47,14 +71,33 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "setCacheKey", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('get/:key'),
     __param(0, (0, common_1.Param)('key')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "getCacheKey", null);
+__decorate([
+    (0, common_1.Delete)('/:key'),
+    __param(0, (0, common_1.Param)('key')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "deleteCacheKey", null);
+__decorate([
+    (0, common_1.Get)('/reset'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "resetCache", null);
+__decorate([
+    (0, common_1.Get)('/store'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "cacheStore", null);
 exports.AppController = AppController = __decorate([
-    (0, common_1.Controller)(),
+    (0, common_1.Controller)('cache'),
     __metadata("design:paramtypes", [app_service_1.AppService])
 ], AppController);
 //# sourceMappingURL=app.controller.js.map

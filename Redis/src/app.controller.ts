@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller('cache')
@@ -23,4 +23,34 @@ async getCacheKey(@Param('key') key: string){
   data
  };
 }
+
+@Delete('/:key')
+  async deleteCacheKey(@Param('key') key:string){
+    await this.appService.deleteCacheKey(key)
+    return {
+      success: true,
+      status: 201,
+      message: 'Key deleted successfully'
+    }
+  }
+
+  @Get('/reset')
+  async resetCache(){
+    await this.appService.resetCache();
+    return {
+      success: true,
+      status: 200,
+      message: "Cache cleared successfully"
+    }
+  }
+
+  @Get('/store')
+  async cacheStore(){
+    const store = await this.appService.cacheKeys();
+    return {
+      success: true,
+      status: 200,
+      data: store
+    }
+  }
 }

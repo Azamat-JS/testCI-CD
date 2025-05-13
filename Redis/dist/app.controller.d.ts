@@ -12,4 +12,19 @@ export declare class AppController {
         status: number;
         data: string;
     }>;
+    deleteCacheKey(key: string): Promise<{
+        success: boolean;
+        status: number;
+        message: string;
+    }>;
+    resetCache(): Promise<{
+        success: boolean;
+        status: number;
+        message: string;
+    }>;
+    cacheStore(): Promise<{
+        success: boolean;
+        status: number;
+        data: string[];
+    }>;
 }

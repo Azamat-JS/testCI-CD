@@ -23,8 +23,25 @@ let AppService = class AppService {
     async setCacheKey(key, value) {
         await this.cacheManager.set(key, value);
     }
+    ;
     async getCacheKey(key) {
         return await this.cacheManager.get(key);
+    }
+    ;
+    async deleteCacheKey(key) {
+        await this.cacheManager.del(key);
+    }
+    ;
+    async resetCache() {
+        await this.cacheManager.clear();
+    }
+    ;
+    async cacheKeys() {
+        const stores = this.cacheManager.stores;
+        if (stores && stores.length > 0 && typeof stores[0].keys === 'function') {
+            return await stores[0].keys();
+        }
+        return [];
     }
 };
 exports.AppService = AppService;

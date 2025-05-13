@@ -4,4 +4,7 @@ export declare class AppService {
     constructor(cacheManager: Cache);
     setCacheKey(key: string, value: string): Promise<void>;
     getCacheKey(key: string): Promise<string>;
+    deleteCacheKey(key: string): Promise<void>;
+    resetCache(): Promise<void>;
+    cacheKeys(): Promise<string[]>;
 }
