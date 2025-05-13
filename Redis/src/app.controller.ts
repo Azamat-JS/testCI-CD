@@ -45,12 +45,13 @@ async getCacheKey(@Param('key') key: string){
   }
 
   @Get('/store')
-  async cacheStore(){
+  async cacheStore() {
     const store = await this.appService.cacheKeys();
     return {
       success: true,
       status: 200,
       data: store
-    }
+    };
   }
+  
 }
