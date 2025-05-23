@@ -6,7 +6,7 @@ import { KAFKA_SERVICE } from './constants';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService,
-    @Inject(KAFKA_SERVICE) private readonly kafkaClient: ClientKafka
+    @Inject(KAFKA_SERVICE) private readonly kafkaClient:ClientKafka
   ) {}
 
   @Get()
@@ -14,9 +14,9 @@ export class AppController {
     return this.appService.getData();
   }
 
-  @EventPattern('order-created')
-  handleOrderCreated(@Payload() order:any){
-    console.log('Order received from api-gateway', order);
-    this.kafkaClient.emit('payment-process', order)  
+  @EventPattern('payment-process')
+  handlePayment(@Payload() order: any){
+    console.log('Payment service received a new order', order);
+    this.kafkaClient.emit('payment-succeed', order)
   }
 }
