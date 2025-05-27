@@ -1,9 +1,10 @@
 import { Controller } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, FindOneUserDto, PaginationDto, UpdateUserDto, Users, UsersServiceController } from '@app/common';
+import { CreateUserDto, FindOneUserDto, PaginationDto, UpdateUserDto, UsersServiceControllerMethods, UsersServiceController } from '@app/common';
 import { Observable } from 'rxjs';
 
 @Controller()
+@UsersServiceControllerMethods()
 export class UsersController implements UsersServiceController{
   constructor(private readonly usersService: UsersService) {}
 
@@ -28,6 +29,6 @@ export class UsersController implements UsersServiceController{
     return this.usersService.remove(findOneUserDto.id);
   }
   queryUsers(paginationDtoStream: Observable<PaginationDto>) {
-    return this.queryUsers(paginationDtoStream)
+    return this.usersService.queryUsers(paginationDtoStream)
   }
 }
