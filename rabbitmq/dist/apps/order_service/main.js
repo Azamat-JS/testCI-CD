@@ -2,6 +2,21 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./apps/order_service/src/constants.ts":
+/*!*********************************************!*\
+  !*** ./apps/order_service/src/constants.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NOTIFICATION_SERVICE_RABBITMQ = exports.PAYMENT_SERVICE_RABBITMQ = void 0;
+exports.PAYMENT_SERVICE_RABBITMQ = 'payment-client';
+exports.NOTIFICATION_SERVICE_RABBITMQ = 'notification-client';
+
+
+/***/ }),
+
 /***/ "./apps/order_service/src/order_service.controller.ts":
 /*!************************************************************!*\
   !*** ./apps/order_service/src/order_service.controller.ts ***!
@@ -21,22 +36,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OrderServiceController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const order_service_service_1 = __webpack_require__(/*! ./order_service.service */ "./apps/order_service/src/order_service.service.ts");
 const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const constants_1 = __webpack_require__(/*! ./constants */ "./apps/order_service/src/constants.ts");
 let OrderServiceController = class OrderServiceController {
     orderServiceService;
-    constructor(orderServiceService) {
+    paymentClient;
+    notificationClient;
+    constructor(orderServiceService, paymentClient, notificationClient) {
         this.orderServiceService = orderServiceService;
+        this.paymentClient = paymentClient;
+        this.notificationClient = notificationClient;
     }
     getHello() {
         return this.orderServiceService.getHello();
     }
     handleOrder(order) {
         console.log('[OrderService]', 'Received order data:', order);
+        this.paymentClient.emit('payment-process', order);
+        this.notificationClient.emit('notification-sent', order);
     }
 };
 exports.OrderServiceController = OrderServiceController;
@@ -55,7 +77,9 @@ __decorate([
 ], OrderServiceController.prototype, "handleOrder", null);
 exports.OrderServiceController = OrderServiceController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof order_service_service_1.OrderServiceService !== "undefined" && order_service_service_1.OrderServiceService) === "function" ? _a : Object])
+    __param(1, (0, common_1.Inject)(constants_1.PAYMENT_SERVICE_RABBITMQ)),
+    __param(2, (0, common_1.Inject)(constants_1.NOTIFICATION_SERVICE_RABBITMQ)),
+    __metadata("design:paramtypes", [typeof (_a = typeof order_service_service_1.OrderServiceService !== "undefined" && order_service_service_1.OrderServiceService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object, typeof (_c = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _c : Object])
 ], OrderServiceController);
 
 
@@ -79,12 +103,41 @@ exports.OrderServiceModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const order_service_controller_1 = __webpack_require__(/*! ./order_service.controller */ "./apps/order_service/src/order_service.controller.ts");
 const order_service_service_1 = __webpack_require__(/*! ./order_service.service */ "./apps/order_service/src/order_service.service.ts");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const constants_1 = __webpack_require__(/*! ./constants */ "./apps/order_service/src/constants.ts");
 let OrderServiceModule = class OrderServiceModule {
 };
 exports.OrderServiceModule = OrderServiceModule;
 exports.OrderServiceModule = OrderServiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: constants_1.PAYMENT_SERVICE_RABBITMQ,
+                    transport: microservices_1.Transport.RMQ,
+                    options: {
+                        urls: ["amqp://guest:guest@localhost:5672"],
+                        queue: 'payment_queue',
+                        queueOptions: {
+                            durable: true
+                        }
+                    }
+                }
+            ]),
+            microservices_1.ClientsModule.register([
+                {
+                    name: constants_1.NOTIFICATION_SERVICE_RABBITMQ,
+                    transport: microservices_1.Transport.RMQ,
+                    options: {
+                        urls: ["amqp://guest:guest@localhost:5672"],
+                        queue: 'notification_queue',
+                        queueOptions: {
+                            durable: true
+                        }
+                    }
+                }
+            ]),
+        ],
         controllers: [order_service_controller_1.OrderServiceController],
         providers: [order_service_service_1.OrderServiceService],
     })

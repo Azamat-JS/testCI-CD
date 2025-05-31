@@ -2,10 +2,25 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./apps/api-gateway/src/api-gateway.controller.ts":
-/*!********************************************************!*\
-  !*** ./apps/api-gateway/src/api-gateway.controller.ts ***!
-  \********************************************************/
+/***/ "./apps/payment-service/src/constants.ts":
+/*!***********************************************!*\
+  !*** ./apps/payment-service/src/constants.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NOTIFICATION_SERVICE_RABBITMQ = exports.PAYMENT_SERVICE_RABBITMQ = void 0;
+exports.PAYMENT_SERVICE_RABBITMQ = 'payment-client';
+exports.NOTIFICATION_SERVICE_RABBITMQ = 'notification-client';
+
+
+/***/ }),
+
+/***/ "./apps/payment-service/src/payment-service.controller.ts":
+/*!****************************************************************!*\
+  !*** ./apps/payment-service/src/payment-service.controller.ts ***!
+  \****************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23,53 +38,53 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ApiGatewayController = void 0;
+exports.PaymentServiceController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const api_gateway_service_1 = __webpack_require__(/*! ./api-gateway.service */ "./apps/api-gateway/src/api-gateway.service.ts");
-const constants_1 = __webpack_require__(/*! ./constants */ "./apps/api-gateway/src/constants.ts");
+const payment_service_service_1 = __webpack_require__(/*! ./payment-service.service */ "./apps/payment-service/src/payment-service.service.ts");
 const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
-let ApiGatewayController = class ApiGatewayController {
-    apiGatewayService;
-    client;
-    constructor(apiGatewayService, client) {
-        this.apiGatewayService = apiGatewayService;
-        this.client = client;
+const constants_1 = __webpack_require__(/*! ./constants */ "./apps/payment-service/src/constants.ts");
+let PaymentServiceController = class PaymentServiceController {
+    paymentServiceService;
+    notificationClient;
+    constructor(paymentServiceService, notificationClient) {
+        this.paymentServiceService = paymentServiceService;
+        this.notificationClient = notificationClient;
     }
     getHello() {
-        return this.apiGatewayService.getHello();
+        return this.paymentServiceService.getHello();
     }
-    createOrder(order) {
-        this.client.emit('order-created', order);
-        return { massage: 'Order details received by api-gateway', order };
+    paymentProcess(order) {
+        console.log('Payment service received order', order);
+        this.notificationClient.emit('successful-payment', order);
     }
 };
-exports.ApiGatewayController = ApiGatewayController;
+exports.PaymentServiceController = PaymentServiceController;
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
-], ApiGatewayController.prototype, "getHello", null);
+], PaymentServiceController.prototype, "getHello", null);
 __decorate([
-    (0, common_1.Post)('order'),
-    __param(0, (0, common_1.Body)()),
+    (0, microservices_1.EventPattern)('payment-process'),
+    __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], ApiGatewayController.prototype, "createOrder", null);
-exports.ApiGatewayController = ApiGatewayController = __decorate([
+], PaymentServiceController.prototype, "paymentProcess", null);
+exports.PaymentServiceController = PaymentServiceController = __decorate([
     (0, common_1.Controller)(),
-    __param(1, (0, common_1.Inject)(constants_1.ORDER_SERVICE_RABBITMQ)),
-    __metadata("design:paramtypes", [typeof (_a = typeof api_gateway_service_1.ApiGatewayService !== "undefined" && api_gateway_service_1.ApiGatewayService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object])
-], ApiGatewayController);
+    __param(1, (0, common_1.Inject)(constants_1.NOTIFICATION_SERVICE_RABBITMQ)),
+    __metadata("design:paramtypes", [typeof (_a = typeof payment_service_service_1.PaymentServiceService !== "undefined" && payment_service_service_1.PaymentServiceService) === "function" ? _a : Object, typeof (_b = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _b : Object])
+], PaymentServiceController);
 
 
 /***/ }),
 
-/***/ "./apps/api-gateway/src/api-gateway.module.ts":
-/*!****************************************************!*\
-  !*** ./apps/api-gateway/src/api-gateway.module.ts ***!
-  \****************************************************/
+/***/ "./apps/payment-service/src/payment-service.module.ts":
+/*!************************************************************!*\
+  !*** ./apps/payment-service/src/payment-service.module.ts ***!
+  \************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -80,42 +95,44 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ApiGatewayModule = void 0;
+exports.PaymentServiceModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const api_gateway_controller_1 = __webpack_require__(/*! ./api-gateway.controller */ "./apps/api-gateway/src/api-gateway.controller.ts");
-const api_gateway_service_1 = __webpack_require__(/*! ./api-gateway.service */ "./apps/api-gateway/src/api-gateway.service.ts");
+const payment_service_controller_1 = __webpack_require__(/*! ./payment-service.controller */ "./apps/payment-service/src/payment-service.controller.ts");
+const payment_service_service_1 = __webpack_require__(/*! ./payment-service.service */ "./apps/payment-service/src/payment-service.service.ts");
 const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
-const constants_1 = __webpack_require__(/*! ./constants */ "./apps/api-gateway/src/constants.ts");
-let ApiGatewayModule = class ApiGatewayModule {
+const constants_1 = __webpack_require__(/*! ./constants */ "./apps/payment-service/src/constants.ts");
+let PaymentServiceModule = class PaymentServiceModule {
 };
-exports.ApiGatewayModule = ApiGatewayModule;
-exports.ApiGatewayModule = ApiGatewayModule = __decorate([
+exports.PaymentServiceModule = PaymentServiceModule;
+exports.PaymentServiceModule = PaymentServiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [microservices_1.ClientsModule.register([
+        imports: [
+            microservices_1.ClientsModule.register([
                 {
-                    name: constants_1.ORDER_SERVICE_RABBITMQ,
+                    name: constants_1.NOTIFICATION_SERVICE_RABBITMQ,
                     transport: microservices_1.Transport.RMQ,
                     options: {
                         urls: ["amqp://guest:guest@localhost:5672"],
-                        queue: 'order_queue',
+                        queue: 'notification_queue',
                         queueOptions: {
                             durable: true
                         }
                     }
                 }
-            ])],
-        controllers: [api_gateway_controller_1.ApiGatewayController],
-        providers: [api_gateway_service_1.ApiGatewayService],
+            ]),
+        ],
+        controllers: [payment_service_controller_1.PaymentServiceController],
+        providers: [payment_service_service_1.PaymentServiceService],
     })
-], ApiGatewayModule);
+], PaymentServiceModule);
 
 
 /***/ }),
 
-/***/ "./apps/api-gateway/src/api-gateway.service.ts":
-/*!*****************************************************!*\
-  !*** ./apps/api-gateway/src/api-gateway.service.ts ***!
-  \*****************************************************/
+/***/ "./apps/payment-service/src/payment-service.service.ts":
+/*!*************************************************************!*\
+  !*** ./apps/payment-service/src/payment-service.service.ts ***!
+  \*************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -126,31 +143,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ApiGatewayService = void 0;
+exports.PaymentServiceService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-let ApiGatewayService = class ApiGatewayService {
+let PaymentServiceService = class PaymentServiceService {
     getHello() {
         return 'Hello World!';
     }
 };
-exports.ApiGatewayService = ApiGatewayService;
-exports.ApiGatewayService = ApiGatewayService = __decorate([
+exports.PaymentServiceService = PaymentServiceService;
+exports.PaymentServiceService = PaymentServiceService = __decorate([
     (0, common_1.Injectable)()
-], ApiGatewayService);
-
-
-/***/ }),
-
-/***/ "./apps/api-gateway/src/constants.ts":
-/*!*******************************************!*\
-  !*** ./apps/api-gateway/src/constants.ts ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ORDER_SERVICE_RABBITMQ = void 0;
-exports.ORDER_SERVICE_RABBITMQ = 'rabbitmq';
+], PaymentServiceService);
 
 
 /***/ }),
@@ -216,18 +219,28 @@ var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
 var exports = __webpack_exports__;
-/*!**************************************!*\
-  !*** ./apps/api-gateway/src/main.ts ***!
-  \**************************************/
+/*!******************************************!*\
+  !*** ./apps/payment-service/src/main.ts ***!
+  \******************************************/
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
-const api_gateway_module_1 = __webpack_require__(/*! ./api-gateway.module */ "./apps/api-gateway/src/api-gateway.module.ts");
+const payment_service_module_1 = __webpack_require__(/*! ./payment-service.module */ "./apps/payment-service/src/payment-service.module.ts");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(api_gateway_module_1.ApiGatewayModule);
-    await app.listen(3000, () => {
-        console.log('server is running on port:3000');
+    const app = await core_1.NestFactory.createMicroservice(payment_service_module_1.PaymentServiceModule, {
+        transport: microservices_1.Transport.RMQ,
+        options: {
+            urls: ["amqp://guest:guest@localhost:5672"],
+            queue: "payment_queue",
+            queueOptions: {
+                durable: true,
+            },
+        },
     });
+    await app.listen();
+    common_1.Logger.log('Payment service is running');
 }
 bootstrap();
 

@@ -1,10 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { OrderServiceService } from './order_service.service';
-import {EventPattern, Payload} from '@nestjs/microservices'
+import {ClientProxy, EventPattern, Payload} from '@nestjs/microservices'
+import { NOTIFICATION_SERVICE_RABBITMQ, PAYMENT_SERVICE_RABBITMQ } from './constants';
 
 @Controller()
 export class OrderServiceController {
-  constructor(private readonly orderServiceService: OrderServiceService) {}
+  constructor(private readonly orderServiceService: OrderServiceService,
+    @Inject(PAYMENT_SERVICE_RABBITMQ) private readonly paymentClient: ClientProxy,
+    @Inject(NOTIFICATION_SERVICE_RABBITMQ) private readonly notificationClient: ClientProxy
+  ) {}
 
   @Get()
   getHello(): string {
@@ -14,5 +18,7 @@ export class OrderServiceController {
   @EventPattern('order-created')
   handleOrder(@Payload() order:any){
    console.log('[OrderService]', 'Received order data:', order);
+   this.paymentClient.emit('payment-process', order)
+   this.notificationClient.emit('notification-sent', order)
   }
 }
